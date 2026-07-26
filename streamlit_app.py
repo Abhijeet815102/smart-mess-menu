@@ -2,21 +2,14 @@ import streamlit as st
 from datetime import datetime, time, timezone, timedelta
 from menu import mess_menu
 
-if 'last_run' not in st.session_state:
-    st.session_state.last_run = time.time()
-
-
-st.cache_data.clear()
-st.cache_resource.clear()
-
 st.set_page_config(
     page_title="Smart Mess Menu",
     page_icon="🍽️",
     layout="centered"
 )
 
-# Use IST (UTC+5:30) - change this if you target other countries
-TIMEZONE_OFFSET = 5.5  # hours
+# Use IST (UTC+5:30)
+TIMEZONE_OFFSET = 5.5
 TZ = timezone(timedelta(hours=TIMEZONE_OFFSET))
 
 # Time-based meal detection
@@ -35,9 +28,10 @@ current_time = current_datetime.time()
 day_index = current_datetime.weekday()
 day_to_show = days[day_index]
 
-# DEBUG: Show current time info
-st.write(f"🕐 Server time (IST): {current_time}")
-st.write(f"📅 Day index: {day_index} ({days[day_index]})")
+# DEBUG OUTPUT - remove later
+st.error(f"🕐 Server time: {current_time}")
+st.error(f"📅 Day index: {day_index} ({days[day_index]})")
+
 # Determine current meal
 meal_to_show = "Breakfast"
 for meal, (start, end) in meal_times.items():
@@ -50,6 +44,9 @@ for meal, (start, end) in meal_times.items():
 else:
     # After dinner - show tomorrow's breakfast
     day_to_show = days[(day_index + 1) % 7]
+
+st.error(f"🍽️ Detected meal: {meal_to_show}")
+st.error(f"📆 Will show: {day_to_show} - {meal_to_show}")
 
 # ... rest of your code
 
