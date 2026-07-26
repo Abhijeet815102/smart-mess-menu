@@ -2,6 +2,10 @@ import streamlit as st
 from datetime import datetime, time, timezone, timedelta
 from menu import mess_menu
 
+if 'last_run' not in st.session_state:
+    st.session_state.last_run = time.time()
+
+
 st.cache_data.clear()
 st.cache_resource.clear()
 
