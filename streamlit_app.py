@@ -1,6 +1,9 @@
 import streamlit as st
-from datetime import datetime, time
+from datetime import datetime, time, timezone, timedelta
 from menu import mess_menu
+
+st.cache_data.clear()
+st.cache_resource.clear()
 
 st.set_page_config(
     page_title="Smart Mess Menu",
@@ -8,35 +11,9 @@ st.set_page_config(
     layout="centered"
 )
 
-st.markdown("""
-<style>
-    .stApp {
-        background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%);
-        color: white;
-    }
-    .stMarkdown, .stText, p, h1, h2, h3, label {
-        color: white !important;
-    }
-    .stButton button {
-        background-color: #60A5FA;
-        color: white;
-    }
-    .special-item {
-        background-color: rgba(96, 165, 250, 0.15);
-        padding: 8px 12px;
-        border-radius: 8px;
-        color: #60A5FA;
-        font-weight: bold;
-    }
-    .avoided-item {
-        color: #6B7280;
-        font-size: 14px;
-    }
-</style>
-""", unsafe_allow_html=True)
-
-st.title("🍽️ Smart Mess Menu")
-st.markdown("---")
+# Use IST (UTC+5:30) - change this if you target other countries
+TIMEZONE_OFFSET = 5.5  # hours
+TZ = timezone(timedelta(hours=TIMEZONE_OFFSET))
 
 # Time-based meal detection
 meal_times = {
@@ -47,10 +24,17 @@ meal_times = {
 }
 
 days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-current_time = datetime.now().time()
-day_index = datetime.now().weekday()
+
+# Get current time in IST
+current_datetime = datetime.now(TZ)
+current_time = current_datetime.time()
+day_index = current_datetime.weekday()
 day_to_show = days[day_index]
 
+# DEBUG: Show current time info
+st.write(f"🕐 Server time (IST): {current_time}")
+st.write(f"📅 Day index: {day_index} ({days[day_index]})")
+# Determine current meal
 meal_to_show = "Breakfast"
 for meal, (start, end) in meal_times.items():
     if current_time < start:
@@ -60,7 +44,11 @@ for meal, (start, end) in meal_times.items():
         meal_to_show = meal
         break
 else:
+    # After dinner - show tomorrow's breakfast
     day_to_show = days[(day_index + 1) % 7]
+
+# ... rest of your code
+
 
 def get_special_items(day, meal):
     items = mess_menu[day][meal]
