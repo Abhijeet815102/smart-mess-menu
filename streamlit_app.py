@@ -8,6 +8,37 @@ st.set_page_config(
     layout="centered"
 )
 
+# Dark theme styling
+st.markdown("""
+<style>
+    .stApp {
+        background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%);
+        color: white;
+    }
+    .stMarkdown, .stText, p, h1, h2, h3, label {
+        color: white !important;
+    }
+    .stButton button {
+        background-color: #60A5FA;
+        color: white;
+    }
+    .special-item {
+        background-color: rgba(96, 165, 250, 0.15);
+        padding: 8px 12px;
+        border-radius: 8px;
+        color: #60A5FA;
+        font-weight: bold;
+    }
+    .avoided-item {
+        color: #6B7280;
+        font-size: 14px;
+    }
+    [data-testid="stSidebar"] {
+        background-color: #1E293B;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # Use IST (UTC+5:30)
 TIMEZONE_OFFSET = 5.5
 TZ = timezone(timedelta(hours=TIMEZONE_OFFSET))
@@ -28,10 +59,6 @@ current_time = current_datetime.time()
 day_index = current_datetime.weekday()
 day_to_show = days[day_index]
 
-# DEBUG OUTPUT - remove later
-st.error(f"🕐 Server time: {current_time}")
-st.error(f"📅 Day index: {day_index} ({days[day_index]})")
-
 # Determine current meal
 meal_to_show = "Breakfast"
 for meal, (start, end) in meal_times.items():
@@ -44,12 +71,6 @@ for meal, (start, end) in meal_times.items():
 else:
     # After dinner - show tomorrow's breakfast
     day_to_show = days[(day_index + 1) % 7]
-
-st.error(f"🍽️ Detected meal: {meal_to_show}")
-st.error(f"📆 Will show: {day_to_show} - {meal_to_show}")
-
-# ... rest of your code
-
 
 def get_special_items(day, meal):
     items = mess_menu[day][meal]
@@ -68,7 +89,7 @@ def get_special_items(day, meal):
     
     return loved, avoided
 
-st.sidebar.header("Browse Menu")
+st.sidebar.header("📋 Browse Menu")
 selected_day = st.sidebar.selectbox("Day", days, index=days.index(day_to_show))
 selected_meal = st.sidebar.selectbox(
     "Meal", 
@@ -76,6 +97,7 @@ selected_meal = st.sidebar.selectbox(
     index=["Breakfast", "Lunch", "Snacks", "Dinner"].index(meal_to_show)
 )
 
+st.title("🍽️ Smart Mess Menu")
 st.markdown(f"### 📅 Showing {selected_day} - {selected_meal}")
 st.markdown("---")
 
